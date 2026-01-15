@@ -81,11 +81,11 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="tel:+573001234567"
+                  href="tel:+5492634211816"
                   className="flex items-center gap-3 text-industrial-400 hover:text-accent-400 transition-colors text-sm"
                 >
                   <Phone className="w-4 h-4 flex-shrink-0" />
-                  +57 300 123 4567
+                  +54 9 2634 211816
                 </a>
               </li>
               <li>
@@ -101,9 +101,9 @@ export default function Footer() {
                 <div className="flex items-start gap-3 text-industrial-400 text-sm">
                   <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span>
-                    Zona Industrial Norte
+                    Intersección Ruta Nacional 7 y Ruta Provincial 153
                     <br />
-                    Bogotá, Colombia
+                    Las Catitas, Santa Rosa, Mendoza, Argentina
                   </span>
                 </div>
               </li>

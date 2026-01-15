@@ -13,11 +13,11 @@ export default function Header() {
           <div className="flex flex-wrap items-center justify-center md:justify-between gap-2 text-xs md:text-sm">
             <div className="flex items-center gap-4 md:gap-6">
               <a
-                href="tel:+573001234567"
+                href="tel:+5492634211816"
                 className="flex items-center gap-1.5 hover:text-accent-400 transition-colors"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>+57 300 123 4567</span>
+                <span>+54 9 2634 211816</span>
               </a>
               <a
                 href="mailto:ventas@sangabriel.com"
@@ -58,7 +58,7 @@ export default function Header() {
 
           {/* CTA Button */}
           <motion.a
-            href="tel:+573001234567"
+            href="tel:+5492634211816"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="hidden md:flex items-center gap-2 px-6 py-3 bg-accent-500 text-white font-medium rounded-xl hover:bg-accent-600 transition-colors shadow-md"
@@ -69,7 +69,7 @@ export default function Header() {
 
           {/* Mobile CTA */}
           <motion.a
-            href="tel:+573001234567"
+            href="tel:+5492634211816"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="md:hidden flex items-center justify-center w-12 h-12 bg-accent-500 text-white rounded-xl"

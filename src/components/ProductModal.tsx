@@ -221,7 +221,7 @@ export default function ProductModal({
 
                   {/* Phone */}
                   <motion.a
-                    href="tel:+573001234567"
+                    href="tel:+5492634211816"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex flex-col items-center justify-center gap-1 py-3 px-2 bg-accent-500 text-white font-medium rounded-lg hover:bg-accent-600 transition-colors shadow-md"

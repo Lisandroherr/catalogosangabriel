@@ -410,7 +410,7 @@ export default function CatalogPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <motion.a
-                  href="tel:+573001234567"
+                  href="tel:+5492634211816"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="inline-flex items-center gap-2 px-8 py-4 bg-white text-accent-600 font-semibold rounded-xl hover:bg-accent-50 transition-colors shadow-lg"
