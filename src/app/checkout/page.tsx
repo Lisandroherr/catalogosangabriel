@@ -50,6 +50,9 @@ export default function CheckoutPage() {
     accountHolder: "San Gabriel S.A.",
   };
 
+  // Link de pago de Mercado Pago
+  const mercadoPagoLink = "https://link.mercadopago.com.ar/mapleleafssoftwares";
+
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
     setCopiedField(field);
@@ -81,73 +84,25 @@ export default function CheckoutPage() {
     }, 5000);
   };
 
-  const openPaymentApp = () => {
-    const amount = getTotalPrice();
-    const formattedAmount = amount.toFixed(2);
-    
-    // Información para la transferencia
-    const transferData = {
-      amount: formattedAmount,
-      cbu: paymentInfo.cbu,
-      alias: paymentInfo.alias,
-      description: `Pedido San Gabriel - ${getTotalItems()} productos`,
-      recipientName: paymentInfo.accountHolder,
-    };
-    
-    // Crear mensaje completo para compartir
-    const paymentMessage = `
-🛒 *Pedido San Gabriel*
-
-📦 Productos: ${getTotalItems()}
-💰 Total a pagar: $${formattedAmount}
-
-💳 *Datos para transferencia:*
-• Alias: ${transferData.alias}
-• CBU: ${transferData.cbu}
-• Titular: ${transferData.recipientName}
-
-📝 Concepto: ${transferData.description}
-    `.trim();
-    
-    // Copiar al portapapeles
-    navigator.clipboard.writeText(paymentMessage).then(() => {
-      alert('✅ Datos de pago copiados al portapapeles!\n\nAhora puedes:\n1. Abrir tu app de banco o Mercado Pago\n2. Pegar los datos de transferencia\n3. Completar el pago');
-    }).catch(() => {
-      // Si falla el copiado, mostrar los datos
-      alert(`Datos de pago:\n\nAlias: ${transferData.alias}\nCBU: ${transferData.cbu}\nMonto: $${formattedAmount}`);
-    });
-    
-    // Detectar si es móvil
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    // Si es móvil, ofrecer abrir la app de Mercado Pago directamente
-    if (isMobile) {
-      setTimeout(() => {
-        const openApp = confirm(
-          '¿Quieres abrir Mercado Pago ahora?\n\n' +
-          'Los datos ya están copiados, solo deberás pegarlos en la app.'
-        );
-        
-        if (openApp) {
-          // Intentar abrir Mercado Pago
-          const isAndroid = /Android/i.test(navigator.userAgent);
-          
-          if (isAndroid) {
-            // Android - abrir app o Play Store
-            window.location.href = 'mercadopago://';
-            setTimeout(() => {
-              window.location.href = 'https://play.google.com/store/apps/details?id=com.mercadopago.wallet';
-            }, 1500);
-          } else {
-            // iOS - abrir app o App Store
-            window.location.href = 'mercadopago://';
-            setTimeout(() => {
-              window.location.href = 'https://apps.apple.com/ar/app/mercado-pago/id925436649';
-            }, 1500);
-          }
-        }
-      }, 500);
+  const handleMercadoPagoPayment = async () => {
+    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
+      alert("Por favor completa todos los campos obligatorios");
+      return;
     }
+
+    // Guardar la información del pedido antes de redirigir
+    const orderData = {
+      customer: customerInfo,
+      items: items,
+      total: getTotalPrice(),
+      date: new Date().toISOString(),
+    };
+
+    // Guardar en localStorage para recuperar después
+    localStorage.setItem('sangabriel-pending-order', JSON.stringify(orderData));
+
+    // Redirigir al link de pago de Mercado Pago
+    window.location.href = mercadoPagoLink;
   };
 
   const sendWhatsAppMessage = () => {
@@ -224,6 +179,15 @@ ${customerInfo.notes ? `\nNotas: ${customerInfo.notes}` : ''}
             </h3>
             
             <div className="space-y-3 mb-4">
+              {/* Mercado Pago Button */}
+              <button
+                onClick={handleMercadoPagoPayment}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#009EE3] text-white font-semibold rounded-xl hover:bg-[#0083c1] transition-colors shadow-lg"
+              >
+                <CreditCard className="w-5 h-5" />
+                Pagar con Mercado Pago
+              </button>
+
               {/* WhatsApp Button */}
               <button
                 onClick={sendWhatsAppMessage}
@@ -231,15 +195,6 @@ ${customerInfo.notes ? `\nNotas: ${customerInfo.notes}` : ''}
               >
                 <MessageCircle className="w-5 h-5" />
                 Enviar por WhatsApp
-              </button>
-
-              {/* Mercado Pago Button */}
-              <button
-                onClick={openPaymentApp}
-                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#009EE3] text-white font-semibold rounded-xl hover:bg-[#0083c1] transition-colors shadow-lg"
-              >
-                <Smartphone className="w-5 h-5" />
-                Copiar Datos y Abrir Mercado Pago
               </button>
             </div>
             
@@ -564,6 +519,15 @@ ${customerInfo.notes ? `\nNotas: ${customerInfo.notes}` : ''}
 
               {/* Payment Buttons */}
               <div className="space-y-3">
+                {/* Mercado Pago Button - PRINCIPAL */}
+                <button
+                  onClick={handleMercadoPagoPayment}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#009EE3] text-white font-semibold rounded-xl hover:bg-[#0083c1] transition-colors shadow-lg"
+                >
+                  <CreditCard className="w-5 h-5" />
+                  Pagar con Mercado Pago
+                </button>
+
                 {/* WhatsApp Button */}
                 <button
                   onClick={() => {
@@ -573,25 +537,10 @@ ${customerInfo.notes ? `\nNotas: ${customerInfo.notes}` : ''}
                     }
                     sendWhatsAppMessage();
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#25D366] text-white font-semibold rounded-xl hover:bg-[#20BA5A] transition-colors shadow-lg"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white font-medium rounded-xl hover:bg-[#20BA5A] transition-colors"
                 >
                   <MessageCircle className="w-5 h-5" />
                   Enviar Pedido por WhatsApp
-                </button>
-
-                {/* Mercado Pago Button */}
-                <button
-                  onClick={() => {
-                    if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
-                      alert("Por favor completa todos los campos obligatorios");
-                      return;
-                    }
-                    openPaymentApp();
-                  }}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#009EE3] text-white font-semibold rounded-xl hover:bg-[#0083c1] transition-colors shadow-lg"
-                >
-                  <Smartphone className="w-5 h-5" />
-                  Copiar Datos y Abrir Mercado Pago
                 </button>
 
                 {/* Confirm Order Button */}
@@ -599,14 +548,14 @@ ${customerInfo.notes ? `\nNotas: ${customerInfo.notes}` : ''}
                   onClick={handleSubmitOrder}
                   className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-industrial-100 text-industrial-700 font-medium rounded-xl hover:bg-industrial-200 transition-colors"
                 >
-                  <CreditCard className="w-5 h-5" />
+                  <Check className="w-5 h-5" />
                   Solo Confirmar (sin pagar ahora)
                 </button>
               </div>
 
               <div className="text-xs text-center text-industrial-500 mt-4 space-y-1">
+                <p><strong className="text-blue-600">🔵 Mercado Pago:</strong> Paga con tarjeta, efectivo o transferencia</p>
                 <p><strong className="text-green-600">🟢 WhatsApp:</strong> Envía tu pedido y coordina el pago</p>
-                <p><strong className="text-blue-600">🔵 Mercado Pago:</strong> Copia datos y abre la app para pagar</p>
                 <p><strong>⚪ Confirmar:</strong> Te contactaremos para coordinar</p>
               </div>
             </div>
