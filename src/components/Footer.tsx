@@ -1,28 +1,28 @@
 "use client";
 
-import { Factory, Phone, Mail, MapPin, ExternalLink } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-industrial-950 text-white">
+    <footer className="bg-industrial-950/80 backdrop-blur-md border-t border-white/10 text-white">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center">
-                <Factory className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold">San Gabriel</h2>
-                <p className="text-xs text-industrial-400 uppercase tracking-wider">
-                  Soluciones Industriales
-                </p>
+              <div className="w-14 h-14 relative">
+                <Image 
+                  src="/logo.png" 
+                  alt="San Gabriel" 
+                  fill
+                  className="object-contain"
+                />
               </div>
             </Link>
-            <p className="text-industrial-400 text-sm leading-relaxed">
+            <p className="text-white/60 text-sm leading-relaxed">
               Líderes en la fabricación y distribución de productos de papel,
               stretch film, tubos de cartón y soluciones de empaque para la
               industria.
@@ -43,7 +43,7 @@ export default function Footer() {
                 <li key={item}>
                   <Link
                     href="/"
-                    className="text-industrial-400 hover:text-accent-400 transition-colors text-sm"
+                    className="text-white/60 hover:text-accent-400 transition-colors text-sm"
                   >
                     {item}
                   </Link>
@@ -66,7 +66,7 @@ export default function Footer() {
                 <li key={item}>
                   <Link
                     href="/"
-                    className="text-industrial-400 hover:text-accent-400 transition-colors text-sm"
+                    className="text-white/60 hover:text-accent-400 transition-colors text-sm"
                   >
                     {item}
                   </Link>
@@ -82,7 +82,7 @@ export default function Footer() {
               <li>
                 <a
                   href="tel:+5492634211816"
-                  className="flex items-center gap-3 text-industrial-400 hover:text-accent-400 transition-colors text-sm"
+                  className="flex items-center gap-3 text-white/60 hover:text-accent-400 transition-colors text-sm"
                 >
                   <Phone className="w-4 h-4 flex-shrink-0" />
                   +54 9 2634 211816
@@ -91,14 +91,14 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:ventas@sangabriel.com"
-                  className="flex items-center gap-3 text-industrial-400 hover:text-accent-400 transition-colors text-sm"
+                  className="flex items-center gap-3 text-white/60 hover:text-accent-400 transition-colors text-sm"
                 >
                   <Mail className="w-4 h-4 flex-shrink-0" />
                   ventas@sangabriel.com
                 </a>
               </li>
               <li>
-                <div className="flex items-start gap-3 text-industrial-400 text-sm">
+                <div className="flex items-start gap-3 text-white/60 text-sm">
                   <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span>
                     Intersección Ruta Nacional 7 y Ruta Provincial 153
@@ -113,9 +113,9 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-industrial-800">
+      <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-industrial-400">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
             <p>
               © {new Date().getFullYear()} San Gabriel. Todos los derechos
               reservados.

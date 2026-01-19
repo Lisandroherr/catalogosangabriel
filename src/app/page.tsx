@@ -136,113 +136,65 @@ export default function CatalogPage() {
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       <main>
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-industrial-950 via-industrial-900 to-industrial-800 text-white py-12 md:py-16 overflow-hidden">
-          {/* Animated Background Elements */}
+        {/* Hero Section - Simplificado y Elegante */}
+        <section id="productos" className="relative bg-gradient-to-br from-industrial-950 via-industrial-900 to-industrial-800 text-white py-20 md:py-28 overflow-hidden">
+          {/* Animated Background */}
           <div className="absolute inset-0">
-            {/* Gradient Orbs */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-            
-            {/* Geometric Pattern */}
-            <div className="absolute inset-0 opacity-5">
-              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id="grid-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <circle cx="20" cy="20" r="1" fill="currentColor" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid-pattern)" />
-              </svg>
-            </div>
-            
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-industrial-950/80 via-transparent to-transparent" />
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.03),transparent_50%)]" />
           </div>
           
           <div className="container mx-auto px-4 relative">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
               className="text-center max-w-4xl mx-auto"
             >
-              <motion.span
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-accent-500/20 border border-accent-500/30 rounded-full text-accent-400 text-sm font-medium mb-6"
-              >
-                <span className="w-2 h-2 bg-accent-400 rounded-full animate-pulse" />
-                Catálogo Actualizado en Tiempo Real
-              </motion.span>
-              
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                <span className="text-white">Productos </span>
-                <span className="bg-gradient-to-r from-accent-400 to-accent-500 bg-clip-text text-transparent">San Gabriel</span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-white via-white to-accent-400 bg-clip-text text-transparent">
+                  Catálogo Digital
+                </span>
               </h1>
               
-              <p className="text-lg md:text-xl text-industrial-300 mb-8 leading-relaxed max-w-2xl mx-auto">
-                Descubra nuestra línea completa de productos industriales de alta calidad
+              <p className="text-xl md:text-2xl text-white/60 mb-12 leading-relaxed">
+                Soluciones de alta calidad para la industria
               </p>
               
-              {/* Quick Stats - Solo visible cuando hay datos */}
-              {catalogData && loadingState === "success" && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="flex flex-wrap items-center justify-center gap-6 md:gap-8"
+              {/* CTA Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              >
+                <button
+                  onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="group px-8 py-4 bg-accent-500 text-white font-semibold rounded-xl hover:bg-accent-600 transition-all shadow-lg hover:shadow-accent-500/50 flex items-center gap-2"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                      <Factory className="w-5 h-5 text-accent-400" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xl font-bold text-white">{catalogData.products.length}</p>
-                      <p className="text-xs text-industrial-400">Productos</p>
-                    </div>
-                  </div>
-                  <div className="w-px h-10 bg-white/20 hidden md:block" />
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-accent-400" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xl font-bold text-white">{catalogData.categories.length}</p>
-                      <p className="text-xs text-industrial-400">Categorías</p>
-                    </div>
-                  </div>
-                  <div className="w-px h-10 bg-white/20 hidden md:block" />
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <Wifi className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-semibold text-green-400">En Línea</p>
-                      <p className="text-xs text-industrial-400">Sistema ERP</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-              
-              {/* Error indicator */}
-              {loadingState === "error" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center justify-center gap-2 text-red-400"
+                  Ver Productos
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  >
+                    →
+                  </motion.span>
+                </button>
+                <a
+                  href="tel:+5492634211816"
+                  className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/20 transition-all border border-white/20 flex items-center gap-2"
                 >
-                  <WifiOff className="w-5 h-5" />
-                  <span className="text-sm">Sin conexión al ERP</span>
-                </motion.div>
-              )}
+                  <Phone className="w-5 h-5" />
+                  Contactar
+                </a>
+              </motion.div>
             </motion.div>
           </div>
         </section>
 
         {/* Main Content */}
-        <section className="py-12 md:py-16">
+        <section id="catalogo" className="py-12 md:py-16">
           <div className="container mx-auto px-4">
             {/* Loading State */}
             {loadingState === "loading" && (
