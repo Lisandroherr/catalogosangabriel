@@ -24,6 +24,7 @@ import {
   LoadingSpinner,
   EmptyState,
 } from "@/components";
+import CartDrawer from "@/components/CartDrawer";
 import {
   filterByCategory,
   searchProducts,
@@ -45,6 +46,7 @@ export default function CatalogPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<CatalogItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   
   // Filter and search state
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
@@ -130,7 +132,8 @@ export default function CatalogPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-industrial-50 to-industrial-100">
-      <Header />
+      <Header onCartClick={() => setIsCartOpen(true)} />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       <main>
         {/* Hero Section */}

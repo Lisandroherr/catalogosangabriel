@@ -41,3 +41,21 @@ export interface CatalogError {
 
 export type CategoryFilter = string | "all";
 export type LoadingState = "idle" | "loading" | "success" | "error";
+
+// Cart types
+export interface CartItem {
+  product: CatalogItem;
+  quantity: number;
+}
+
+export interface Cart {
+  items: CartItem[];
+  total: number;
+}
+
+export interface PaymentInfo {
+  cbu: string;
+  alias: string;
+  bankName: string;
+  accountHolder: string;
+}

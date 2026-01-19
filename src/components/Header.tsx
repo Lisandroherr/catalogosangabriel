@@ -1,10 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Factory, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, Clock } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import CartButton from "./CartButton";
 
-export default function Header() {
+interface HeaderProps {
+  onCartClick: () => void;
+}
+
+export default function Header({ onCartClick }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-industrial-200">
       {/* Top Bar */}
@@ -41,10 +47,16 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <motion.div
-              whileHover={{ rotate: 10 }}
-              className="w-12 h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              className="w-12 h-12 md:w-14 md:h-14 relative"
             >
-              <Factory className="w-7 h-7 text-white" />
+              <Image 
+                src="/logo.svg" 
+                alt="San Gabriel Logo" 
+                fill
+                className="object-contain"
+                priority
+              />
             </motion.div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-industrial-900 tracking-tight">
@@ -56,26 +68,22 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* CTA Button */}
-          <motion.a
-            href="tel:+5492634211816"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="hidden md:flex items-center gap-2 px-6 py-3 bg-accent-500 text-white font-medium rounded-xl hover:bg-accent-600 transition-colors shadow-md"
-          >
-            <Phone className="w-5 h-5" />
-            Solicitar Cotización
-          </motion.a>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3">
+            {/* Cart Button */}
+            <CartButton onClick={onCartClick} />
 
-          {/* Mobile CTA */}
-          <motion.a
-            href="tel:+5492634211816"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="md:hidden flex items-center justify-center w-12 h-12 bg-accent-500 text-white rounded-xl"
-          >
-            <Phone className="w-5 h-5" />
-          </motion.a>
+            {/* Contact CTA - Desktop */}
+            <motion.a
+              href="tel:+5492634211816"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="hidden lg:flex items-center gap-2 px-6 py-3 bg-industrial-900 text-white font-medium rounded-xl hover:bg-industrial-700 transition-colors shadow-md"
+            >
+              <Phone className="w-5 h-5" />
+              Solicitar Cotización
+            </motion.a>
+          </div>
         </div>
       </div>
     </header>

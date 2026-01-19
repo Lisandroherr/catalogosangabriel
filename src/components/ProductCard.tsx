@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Package, Layers, Eye } from "lucide-react";
+import { Package, Layers, Eye, ShoppingCart, Plus, Check } from "lucide-react";
 import { useState } from "react";
 import type { CatalogItem } from "@/types";
 import { formatPrice, getCategoryIcon } from "@/services/catalog";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   product: CatalogItem;
@@ -19,6 +20,15 @@ export default function ProductCard({
 }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [showAddedNotification, setShowAddedNotification] = useState(false);
+  const { addItem, isInCart, getItemQuantity } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addItem(product, 1);
+    setShowAddedNotification(true);
+    setTimeout(() => setShowAddedNotification(false), 2000);
+  };
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -110,16 +120,41 @@ export default function ProductCard({
           </div>
         </div>
 
-        {/* CTA Button */}
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => onViewDetails(product)}
-          className="w-full mt-4 py-3 px-4 bg-industrial-900 text-white font-medium rounded-lg hover:bg-accent-600 transition-colors duration-200 flex items-center justify-center gap-2"
-        >
-          <Package className="w-4 h-4" />
-          Solicitar Cotización
-        </motion.button>
+        {/* Action Buttons */}
+        <div className="mt-4 flex gap-2">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleAddToCart}
+            className="flex-1 py-3 px-4 bg-accent-500 text-white font-medium rounded-lg hover:bg-accent-600 transition-colors duration-200 flex items-center justify-center gap-2 relative overflow-hidden"
+          >
+            {showAddedNotification ? (
+              <>
+                <Check className="w-4 h-4" />
+                Agregado
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="w-4 h-4" />
+                Agregar
+                {isInCart(product.referencia) && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {getItemQuantity(product.referencia)}
+                  </span>
+                )}
+              </>
+            )}
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onViewDetails(product)}
+            className="py-3 px-4 bg-industrial-900 text-white font-medium rounded-lg hover:bg-industrial-700 transition-colors duration-200 flex items-center justify-center"
+            title="Ver detalles"
+          >
+            <Eye className="w-4 h-4" />
+          </motion.button>
+        </div>
       </div>
 
       {/* Decorative accent line */}

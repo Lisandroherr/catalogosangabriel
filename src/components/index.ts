@@ -7,3 +7,6 @@ export { default as SearchBar } from "./SearchBar";
 export { default as SortSelect } from "./SortSelect";
 export { default as LoadingSpinner } from "./LoadingSpinner";
 export { default as EmptyState } from "./EmptyState";
+export { default as CartButton } from "./CartButton";
+export { default as CartDrawer } from "./CartDrawer";
+
