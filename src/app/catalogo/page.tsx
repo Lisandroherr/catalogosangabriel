@@ -52,25 +52,50 @@ export default function CatalogoPage() {
     fetchCatalog();
   }, []);
 
-  // Organizar productos por categoría en secciones
-  const productsByCategory = catalogData?.products.reduce((acc, product) => {
-    const category = product.categoria || 'Sin categoría';
-    if (!acc[category]) acc[category] = [];
-    acc[category].push(product);
-    return acc;
-  }, {} as Record<string, CatalogItem[]>) || {};
+  // Definir secciones con sus referencias específicas
+  const sections = [
+    { name: 'Línea Clásica', refs: ['3', '6', '2', '5'] },
+    { name: 'Línea Extra Suave', refs: ['9', '10', '11'] },
+    { name: 'Línea San Marino', refs: ['12', '13', '14'] },
+    { name: 'Individual Natural', refs: ['1', '7', '4', '8'] },
+    { name: 'Rollos Blancos', refs: ['15', '18', '17', '16', '19', '20', '22', '26', '25'] },
+    { name: 'Otros Productos', refs: ['24', '23'] },
+    { name: 'Film Stretch', refs: ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9'] }
+  ];
 
-  // Crear páginas con productos agrupados por categoría (2 productos por página)
+  // Debug: Ver todas las referencias disponibles
+  useEffect(() => {
+    if (catalogData?.products) {
+      console.log('Referencias disponibles:', catalogData.products.map(p => p.referencia));
+      console.log('Total productos:', catalogData.products.length);
+    }
+  }, [catalogData]);
+
+  // Organizar productos por secciones
+  const productsBySections = sections.map(section => {
+    const sectionProducts = catalogData?.products.filter(p => 
+      section.refs.some(ref => p.referencia.toLowerCase().includes(ref.toLowerCase()))
+    ) || [];
+    // Ordenar productos según el orden de las referencias en la sección
+    const orderedProducts = section.refs
+      .map(ref => sectionProducts.find(p => p.referencia.toLowerCase().includes(ref.toLowerCase())))
+      .filter(Boolean) as CatalogItem[];
+    console.log(`Sección ${section.name}:`, orderedProducts.length, 'productos');
+    return { ...section, products: orderedProducts };
+  }).filter(section => section.products.length > 0);
+
+  // Crear páginas con productos agrupados por sección (4 productos por página)
   const pages = catalogData?.products ? [
     { type: 'cover' as const },
-    ...Object.entries(productsByCategory).flatMap(([category, products]) => [
-      { type: 'category-intro' as const, category },
-      ...chunkArray(products, 2).map(prods => ({ 
+    { type: 'about' as const },
+    { type: 'index' as const, sections: productsBySections },
+    ...productsBySections.flatMap(section => 
+      chunkArray(section.products, 4).map(prods => ({ 
         type: 'products' as const, 
         products: prods,
-        category 
+        category: section.name 
       }))
-    ]),
+    ),
     { type: 'contact' as const }
   ] : [];
 
@@ -132,6 +157,11 @@ export default function CatalogoPage() {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
+          html, body {
+            margin: 0;
+            padding: 0;
+            overflow: visible;
+          }
           .no-print {
             display: none !important;
           }
@@ -141,11 +171,26 @@ export default function CatalogoPage() {
             height: 297mm;
             margin: 0;
             padding: 0;
+            display: block;
+          }
+          .print-only {
+            display: block !important;
+          }
+          .screen-only {
+            display: none !important;
+          }
+        }
+        @media screen {
+          .print-only {
+            display: none;
+          }
+          .screen-only {
+            display: block;
           }
         }
       `}</style>
 
-      <div className={`min-h-screen bg-gradient-to-br from-industrial-900 via-industrial-800 to-industrial-900 ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+      <div className={`screen-only min-h-screen bg-gradient-to-br from-industrial-900 via-industrial-800 to-industrial-900 ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
         
         {/* Controls - Top Right */}
         <div className="no-print fixed top-4 right-4 z-50 flex items-center gap-2">
@@ -306,7 +351,7 @@ export default function CatalogoPage() {
       </div>
 
       {/* Print Version - All Pages */}
-      <div className="hidden print:block">
+      <div className="print-only">
         {pages.map((page, index) => (
           <div key={index} className="print-page">
             <PageContent page={page} pageNumber={index} totalPages={totalPages} />
@@ -328,7 +373,12 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 
 // Page Content Component
 interface PageContentProps {
-  page: { type: 'cover' | 'category-intro' | 'products' | 'contact', products?: CatalogItem[], category?: string };
+  page: { 
+    type: 'cover' | 'about' | 'index' | 'category-intro' | 'products' | 'contact', 
+    products?: CatalogItem[], 
+    category?: string,
+    sections?: { name: string, products: CatalogItem[] }[]
+  };
   pageNumber: number;
   totalPages: number;
 }
@@ -382,40 +432,217 @@ function PageContent({ page, pageNumber, totalPages }: PageContentProps) {
     );
   }
 
+  if (page.type === 'about') {
+    return (
+      <div className="w-full h-full bg-white flex flex-col">
+        {/* Header oscuro */}
+        <div className="bg-industrial-900 px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 relative">
+                <Image src="/logo.png" alt="San Gabriel" fill className="object-contain brightness-0 invert" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-white uppercase tracking-wide">Sobre Nosotros</h3>
+                <p className="text-[10px] text-white/60">San Gabriel - Soluciones Industriales</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-white/60">Página {pageNumber + 1}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Contenido */}
+        <div className="flex-1 p-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-8 text-center">
+              <div className="w-48 h-32 mx-auto mb-6 relative">
+                <Image src="/logoblack.png" alt="San Gabriel" fill className="object-contain" />
+              </div>
+              <div className="w-16 h-1 bg-accent-500 mx-auto mb-4" />
+              <p className="text-lg text-accent-600 font-semibold">Soluciones Industriales de Calidad</p>
+            </div>
+
+            <div className="space-y-4 text-industrial-700">
+              <p className="text-sm leading-relaxed">
+                En <strong>San Gabriel</strong>, nos dedicamos a ofrecer productos industriales de la más alta calidad 
+                para satisfacer las necesidades de nuestros clientes. Con años de experiencia en el mercado, nos hemos 
+                consolidado como una empresa confiable y comprometida con la excelencia.
+              </p>
+              
+              <p className="text-sm leading-relaxed">
+                Nuestro catálogo incluye una amplia variedad de productos, desde papel higiénico de diferentes líneas 
+                hasta rollos industriales y film stretch, todos diseñados para brindar el mejor desempeño y rendimiento.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 my-6">
+                <div className="bg-accent-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-accent-600 mb-2">✓ Calidad Garantizada</h3>
+                  <p className="text-xs text-industrial-600">Productos certificados y de primer nivel</p>
+                </div>
+                <div className="bg-accent-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-accent-600 mb-2">✓ Atención Personalizada</h3>
+                  <p className="text-xs text-industrial-600">Asesoramiento profesional para cada cliente</p>
+                </div>
+                <div className="bg-accent-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-accent-600 mb-2">✓ Mejores Precios</h3>
+                  <p className="text-xs text-industrial-600">Precios competitivos del mercado</p>
+                </div>
+                <div className="bg-accent-50 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-accent-600 mb-2">✓ Entrega Rápida</h3>
+                  <p className="text-xs text-industrial-600">Logística eficiente y confiable</p>
+                </div>
+              </div>
+
+              <p className="text-sm leading-relaxed">
+                <strong>Nuestra misión</strong> es ser su socio estratégico en soluciones industriales, 
+                brindando productos de calidad superior respaldados por un servicio excepcional.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer oscuro */}
+        <div className="bg-industrial-900 px-6 py-3">
+          <div className="flex justify-between items-center">
+            <p className="text-[10px] text-white/70">📞 +54 9 2634 211816 | ✉ ventas@sangabriel.com</p>
+            <p className="text-[10px] text-white/70">www.sangabriel.com</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (page.type === 'index' && page.sections) {
+    // Calcular el número de página para cada sección
+    let currentPageNum = 3; // Portada (1), Sobre Nosotros (2), Índice (3)
+    
+    const sectionsWithPages = page.sections.map(section => {
+      currentPageNum++; // Página de introducción de categoría
+      const startPage = currentPageNum + 1;
+      const productPages = Math.ceil(section.products.length / 4);
+      currentPageNum += productPages;
+      const endPage = currentPageNum;
+      
+      return {
+        ...section,
+        startPage,
+        endPage
+      };
+    });
+
+    return (
+      <div className="w-full h-full bg-white flex flex-col">
+        {/* Header oscuro */}
+        <div className="bg-industrial-900 px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 relative">
+                <Image src="/logo.png" alt="San Gabriel" fill className="object-contain brightness-0 invert" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-white uppercase tracking-wide">Índice del Catálogo</h3>
+                <p className="text-[10px] text-white/60">San Gabriel - Soluciones Industriales</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-white/60">Página {pageNumber + 1}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Contenido del índice */}
+        <div className="flex-1 p-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-6 text-center">
+              <h2 className="text-3xl font-bold text-industrial-900 mb-2">Índice de Contenidos</h2>
+              <div className="w-16 h-1 bg-accent-500 mx-auto mb-2" />
+              <p className="text-sm text-industrial-600">Navegue por nuestras categorías de productos</p>
+            </div>
+
+            <div className="space-y-3">
+              {sectionsWithPages.map((section, idx) => (
+                <div 
+                  key={idx} 
+                  className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-100 to-white border-l-4 border-gray-500 rounded-r-lg hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center text-white font-bold">
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-bold text-industrial-900">{section.name}</h3>
+                      <p className="text-xs text-industrial-500">
+                        {section.products.length} producto{section.products.length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 ml-4">
+                    <span className="text-sm text-industrial-500">Págs.</span>
+                    <span className="text-base font-bold text-gray-600">
+                      {section.startPage}
+                      {section.endPage > section.startPage ? `-${section.endPage}` : ''}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 p-4 bg-industrial-50 rounded-lg border border-industrial-200">
+              <p className="text-xs text-industrial-600 text-center">
+                <strong>Nota:</strong> Este catálogo contiene {totalPages} páginas en total con información detallada de nuestros productos.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer oscuro */}
+        <div className="bg-industrial-900 px-6 py-3">
+          <div className="flex justify-between items-center">
+            <p className="text-[10px] text-white/70">📞 +54 9 2634 211816 | ✉ ventas@sangabriel.com</p>
+            <p className="text-[10px] text-white/70">www.sangabriel.com</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (page.type === 'category-intro' && page.category) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-accent-500 via-accent-600 to-industrial-900 flex flex-col items-center justify-center p-12 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
+      <div className="w-full h-full bg-gradient-to-br from-industrial-800 to-industrial-900 flex flex-col justify-center p-12 relative overflow-hidden">
+        {/* Background Pattern - Más sutil */}
+        <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
+            backgroundImage: `linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%)`,
+            backgroundSize: '20px 20px'
           }} />
         </div>
         
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
+        {/* Decorative accent */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-32 bg-accent-500" />
         
-        <div className="relative z-10 text-center">
-          <div className="w-24 h-24 mx-auto mb-8 relative">
-            <Image 
-              src="/logo.png" 
-              alt="San Gabriel" 
-              fill 
-              className="object-contain drop-shadow-2xl opacity-90"
-            />
+        <div className="relative z-10 pl-8">
+          <div className="flex items-center gap-6 mb-4">
+            <div className="w-16 h-16 relative">
+              <Image 
+                src="/logo.png" 
+                alt="San Gabriel" 
+                fill 
+                className="object-contain opacity-80"
+              />
+            </div>
+            <div>
+              <p className="text-accent-400 text-sm font-semibold uppercase tracking-wider mb-1">Sección</p>
+              <h2 className="text-3xl font-bold text-white">
+                {page.category}
+              </h2>
+            </div>
           </div>
-          
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-            {page.category}
-          </h2>
-          
-          <div className="w-32 h-1 bg-white/50 mx-auto" />
         </div>
         
-        <div className="absolute bottom-8 left-0 right-0 text-center">
-          <p className="text-white/60 text-sm">Página {pageNumber + 1}</p>
+        <div className="absolute bottom-6 right-6">
+          <p className="text-white/30 text-xs">Página {pageNumber + 1}</p>
         </div>
       </div>
     );
@@ -423,73 +650,74 @@ function PageContent({ page, pageNumber, totalPages }: PageContentProps) {
 
   if (page.type === 'products' && page.products) {
     return (
-      <div className="w-full h-full bg-white p-8 flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-industrial-200">
-          <div className="w-12 h-12 relative">
-            <Image src="/logo.png" alt="San Gabriel" fill className="object-contain opacity-50" />
+      <div className="w-full h-full bg-white flex flex-col">
+        {/* Header - Oscuro */}
+        <div className="bg-industrial-900 px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 relative">
+                <Image src="/logo.png" alt="San Gabriel" fill className="object-contain brightness-0 invert" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-white uppercase tracking-wide">
+                  {page.category || 'Catálogo de Productos'}
+                </h3>
+                <p className="text-[10px] text-white/60">San Gabriel - Soluciones Industriales</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-white/60">Página {pageNumber + 1}</p>
+            </div>
           </div>
-          <h3 className="text-sm font-semibold text-industrial-500 uppercase tracking-wider">
-            Catálogo de Productos
-          </h3>
         </div>
         
-        {/* Products */}
-        <div className="flex-1 space-y-6">
+        {/* Products Grid - 2x2 con 4 productos */}
+        <div className="flex-1 grid grid-cols-2 gap-4 p-6">
           {page.products.map((product, index) => (
-            <div key={product.referencia || index} className="flex gap-6 p-5 bg-gradient-to-br from-industrial-50 to-white rounded-2xl border-2 border-industrial-200 shadow-sm hover:shadow-md transition-shadow">
-              {/* Product Image */}
-              <div className="w-40 h-40 bg-white rounded-xl flex items-center justify-center flex-shrink-0 border-2 border-industrial-200 overflow-hidden shadow-sm">
+            <div key={product.referencia || index} className="flex flex-col bg-white">
+              {/* Product Image - Sin borde visible */}
+              <div className="w-full aspect-square bg-gradient-to-br from-gray-50 to-white rounded-lg flex items-center justify-center mb-3 overflow-hidden">
                 {product.imagen ? (
                   <Image 
                     src={product.imagen} 
                     alt={product.nombre}
-                    width={160}
-                    height={160}
-                    className="object-contain w-full h-full p-3"
+                    width={220}
+                    height={220}
+                    className="object-contain w-full h-full p-4"
                   />
                 ) : (
-                  <span className="text-5xl font-bold text-industrial-300">
+                  <span className="text-5xl font-bold text-gray-200">
                     {product.nombre?.charAt(0) || 'P'}
                   </span>
                 )}
               </div>
               
-              {/* Product Info */}
-              <div className="flex-1 flex flex-col justify-between min-w-0 py-1">
-                <div>
-                  <h4 className="text-xl font-bold text-industrial-900 mb-3 line-clamp-2 leading-tight">
-                    {product.nombre}
-                  </h4>
-                  
-                  <div className="space-y-2">
-                    {product.referencia && (
-                      <p className="text-sm text-industrial-600">
-                        <span className="font-semibold">Código:</span> <span className="font-mono">{product.referencia}</span>
-                      </p>
-                    )}
-                    {product.categoria && (
-                      <p className="text-sm text-industrial-600">
-                        <span className="font-semibold">Categoría:</span> {product.categoria}
-                      </p>
-                    )}
-                  </div>
-                </div>
+              {/* Product Info - Siempre pegado a la imagen */}
+              <div className="flex flex-col gap-1">
+                <h4 className="text-xs font-bold text-industrial-900 line-clamp-2 leading-tight">
+                  {product.nombre}
+                </h4>
                 
-                <div className="mt-4">
-                  <p className="text-3xl font-bold text-accent-500">
-                    {formatPrice(product.precio)}
+                {product.referencia && (
+                  <p className="text-[10px] text-industrial-500">
+                    <span className="font-semibold">Ref:</span> <span className="font-mono">{product.referencia}</span>
                   </p>
-                </div>
+                )}
+                
+                <p className="text-xl font-bold text-accent-500 mt-1">
+                  {formatPrice(product.precio)}
+                </p>
               </div>
             </div>
           ))}
         </div>
         
-        {/* Footer */}
-        <div className="mt-6 pt-4 border-t border-industrial-200 flex justify-between items-center">
-          <p className="text-xs text-industrial-400 font-medium">San Gabriel - Soluciones Industriales</p>
-          <p className="text-xs text-industrial-400">Página {pageNumber + 1}</p>
+        {/* Footer - Oscuro */}
+        <div className="bg-industrial-900 px-6 py-3">
+          <div className="flex justify-between items-center">
+            <p className="text-[10px] text-white/70">📞 +54 9 2634 211816 | ✉ ventas@sangabriel.com</p>
+            <p className="text-[10px] text-white/70">www.sangabriel.com</p>
+          </div>
         </div>
       </div>
     );
