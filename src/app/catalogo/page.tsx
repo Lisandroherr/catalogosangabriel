@@ -263,7 +263,7 @@ export default function CatalogoPage() {
                   rotateY: flipDirection === 'right' ? -90 : 0,
                   opacity: flipDirection === 'right' ? 0 : 1
                 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
                 className="origin-right shadow-2xl"
                 style={{ 
                   transformStyle: 'preserve-3d',
@@ -294,7 +294,7 @@ export default function CatalogoPage() {
                     rotateY: flipDirection === 'left' ? 90 : 0,
                     opacity: flipDirection === 'left' ? 0 : 1
                   }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
                   className="origin-left shadow-2xl"
                   style={{ 
                     transformStyle: 'preserve-3d',
@@ -519,7 +519,6 @@ function PageContent({ page, pageNumber, totalPages }: PageContentProps) {
     let currentPageNum = 3; // Portada (1), Sobre Nosotros (2), Índice (3)
     
     const sectionsWithPages = page.sections.map(section => {
-      currentPageNum++; // Página de introducción de categoría
       const startPage = currentPageNum + 1;
       const productPages = Math.ceil(section.products.length / 4);
       currentPageNum += productPages;
@@ -727,8 +726,8 @@ function PageContent({ page, pageNumber, totalPages }: PageContentProps) {
     return (
       <div className="w-full h-full bg-gradient-to-br from-industrial-50 to-white p-8 md:p-12 flex flex-col">
         <div className="flex-1">
-          <div className="w-20 h-20 mb-6 relative">
-            <Image src="/logo.png" alt="San Gabriel" fill className="object-contain" />
+          <div className="w-32 h-24 mb-6 relative">
+            <Image src="/logoblack.png" alt="San Gabriel" fill className="object-contain" />
           </div>
           
           <h2 className="text-3xl font-bold text-industrial-900 mb-2">
